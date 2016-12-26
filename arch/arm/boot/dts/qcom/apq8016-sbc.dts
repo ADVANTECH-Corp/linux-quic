@@ -23,3 +23,11 @@
 	qcom,board-id = <24 0>;
 
 };
+
+&spi_0 {
+	device@0 {
+		compatible = "advantech,adamIO";
+		spi-max-frequency = <1000000>; /* 1 MHz */
+		reg = <0>;
+	};
+};

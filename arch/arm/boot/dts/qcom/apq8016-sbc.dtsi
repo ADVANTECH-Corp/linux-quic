@@ -22,61 +22,6 @@
 };
 
 &soc {
-	i2c@78b6000 { /* BLSP1 QUP2 */
-		mpu6050@68 { /* Gyroscope and accelerometer sensor combo */
-			compatible = "invn,mpu6050";
-			reg = <0x68>;
-			pinctrl-names = "mpu_default","mpu_sleep";
-			pinctrl-0 = <&mpu6050_default>;
-			pinctrl-1 = <&mpu6050_sleep>;
-			interrupt-parent = <&msm_gpio>;
-			interrupts = <115 0x2>;
-			vdd-supply = <&vph_pwr_vreg>;
-			vlogic-supply = <&vph_pwr_vreg>;
-			vi2c-supply = <&vph_pwr_vreg>;
-			invn,gpio-int = <&msm_gpio 115 0x2>;
-			invn,place = "Portrait Down Back Side";
-		};
-
-		avago@39 { /* Ambient light and proximity sensor */
-			compatible = "avago,apds9900";
-			reg = <0x39>;
-			pinctrl-names = "default","sleep";
-			pinctrl-0 = <&apds99xx_default>;
-			pinctrl-1 = <&apds99xx_sleep>;
-			interrupt-parent = <&msm_gpio>;
-			interrupts = <113 0x2002>;
-			vdd-supply = <&vph_pwr_vreg>;
-			vio-supply = <&vph_pwr_vreg>;
-			avago,irq-gpio = <&msm_gpio 113 0x2002>;
-			avago,ps-threshold = <600>;
-			avago,ps-hysteresis-threshold = <500>;
-			avago,ps-pulse = <8>;
-			avago,ps-pgain = <0>;
-			avago,als-B = <223>;
-			avago,als-C = <70>;
-			avago,als-D = <142>;
-			avago,ga-value = <48>;
-		};
-
-		akm@c {
-			compatible = "ak,ak8963";
-			reg = <0x0c>;
-			pinctrl-names = "ak8963_default", "ak8963_sleep";
-			pinctrl-0 = <&ak8963_default>;
-			pinctrl-1 = <&ak8963_sleep>;
-			interrupt-parent = <&msm_gpio>;
-			interrupts = <69 0x2>;
-			vdd-supply = <&vph_pwr_vreg>;
-			vio-supply = <&vph_pwr_vreg>;
-			ak,layout = <0x6>;
-			ak,auto-report;
-		};
-	};
-
-    spi_0 { /* BLSP1 QUP3 */
-		status = "disabled";
-    };
 
 	i2c@78b8000 { /* BLSP1 QUP4 */
 		/* DSI_TO_HDMI I2C configuration */
@@ -96,32 +41,6 @@
 		};
 	};
 
-	i2c@78b9000 { /* BLSP1 QUP5 */
-		synaptics@20 {
-			compatible = "synaptics,rmi4";
-			reg = <0x20>;
-			interrupt-parent = <&msm_gpio>;
-			interrupts = <13 0x2008>;
-			vdd-supply = <&vph_pwr_vreg>;
-			vcc_i2c-supply = <&vph_pwr_vreg>;
-			/* pins used by touchscreen */
-			pinctrl-names = "pmx_ts_active","pmx_ts_suspend","pmx_ts_suspend";
-			pinctrl-0 = <&ts_int_active &ts_reset_active>;
-			pinctrl-1 = <&ts_int_suspend &ts_reset_suspend>;
-			pinctrl-2 = <&ts_release>;
-			synaptics,display-coords = <0 0 1079 1919>;
-			synaptics,panel-coords = <0 0 1079 2084>;
-			synaptics,irq-gpio = <&msm_gpio 13 0x2008>;
-			synaptics,reset-gpio = <&msm_gpio 12 0x0>;
-			synaptics,i2c-pull-up;
-			synaptics,power-down;
-			synaptics,disable-gpios;
-			/* Underlying clocks used by secure touch */
-			clocks = <&clock_gcc clk_gcc_blsp1_ahb_clk>,
-			 <&clock_gcc clk_gcc_blsp1_qup5_i2c_apps_clk>;
-			clock-names = "iface_clk", "core_clk";
-		};
-	};
 
 	i2c@78ba000 { /* BLSP1 QUP6 */
         /*insert i2c_6 states expansion connector  */
@@ -296,9 +215,9 @@
 
 &usb_otg {
 	qcom,hsusb-otg-mode = <3>;
-	qcom,usbid-gpio = <&msm_gpio 121 0>;
-	qcom,hub-reset-gpio = <&pm8916_gpios 3 0>;
-	qcom,sw-sel-gpio = <&pm8916_gpios 4 0>;
+	qcom,usbid-gpio = <&msm_gpio 110 1>;
+	qcom,hub-reset-gpio = <&pm8916_gpios 1 0>;
+	qcom,sw-sel-gpio = <&pm8916_gpios 2 0>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&usbid_default>;
 	vbus_otg-supply = <&vph_pwr_vreg>;
@@ -575,15 +494,6 @@
 };
 
 &tlmm_pinmux {
-	usb-id-pin {
-		qcom,pins = <&gp 121>;
-	     usbid_default{
-			drive-strength = <2>;
-			bias-disable; /* no pullup */
-			output-low;
-		};
-	};
-
 	gpio_led_pins {
 		qcom,pins = <&gp 21>, <&gp 120>;
 		qcom,num-grp-pins = <2>;
@@ -732,9 +642,9 @@
 &pm8916_gpios {
 	gpio@c000 { /* GPIO 1 */
 		qcom,mode = <1>;		/* Digital output */
-		qcom,pull = <4>;		/* Pull down */
-		qcom,vin-sel = <2>;		/* VIN 2*/
-		qcom,src-sel = <1>;		/* GPIO */
+		qcom,pull = <5>;		/* Pull down */
+		qcom,vin-sel = <0>;		/* VIN 2*/
+		qcom,src-sel = <0>;		/* GPIO */
 		qcom,master-en = <1>;	/* Enable GPIO */
 		status = "okay";
 	};
@@ -761,9 +671,9 @@
 	/* USB_SW_SEL*/
 	gpio@c300 { /* GPIO 4 */
 		qcom,mode = <1>;	/* Digital output */
-		qcom,pull = <5>;	/* No PULL */
-		qcom,vin-sel = <0>;	/* VPH */
-		qcom,src-sel = <0>;	/* CONSTANT */
+		qcom,pull = <4>;	/* No PULL */
+		qcom,vin-sel = <2>;	/* VPH */
+		qcom,src-sel = <1>;	/* CONSTANT */
 		qcom,master-en = <1>; 	/* ENABLE GPIO */
 		status = "okay";
 	};
